@@ -31,7 +31,47 @@ html { background: #07090f; }
   --font: 'DM Mono', monospace;
   --display: 'Bebas Neue', sans-serif;
 }
-body { background:var(--bg); color:var(--text); font-family:var(--font); min-height:100vh; padding-bottom:60px; max-width:500px; margin:0 auto; }
+body { background:var(--bg); color:var(--text); font-family:var(--font); min-height:100vh; padding-bottom:60px; }
+
+/* ── Responsive layout ── */
+.app-wrapper { max-width:500px; margin:0 auto; }
+
+@media (min-width: 768px) {
+  .app-wrapper { max-width:100%; }
+  .app-header { max-width:100%; padding:16px 32px; }
+  .cfg { padding:14px 32px; }
+  .gbar { padding:12px 32px; }
+  .ttabs { display:none; } /* hide tabs on wide screens */
+  .desktop-grid {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:24px;
+    padding:0 32px 40px;
+  }
+  .tpanel { display:block !important; padding:0; }
+  .tpanel-inner { 
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:20px;
+  }
+  .tunnel-header {
+    font-family:var(--display);
+    font-size:22px;
+    letter-spacing:2px;
+    color:var(--accent);
+    margin-bottom:16px;
+    padding-bottom:12px;
+    border-bottom:1px solid var(--border);
+  }
+}
+
+@media (min-width:1200px) {
+  .desktop-grid { max-width:1100px; margin:0 auto; padding:0 40px 40px; }
+  .app-header { max-width:1100px; margin:0 auto; }
+  .cfg { max-width:1100px; margin:0 auto; }
+  .gbar { max-width:1100px; margin:0 auto; }
+}
 
 /* Header */
 .hdr { display:flex; align-items:center; gap:10px; padding:14px 16px; border-bottom:1px solid var(--border); position:sticky; top:0; background:var(--bg); z-index:50; }
@@ -316,8 +356,20 @@ input[type=range]:active::-webkit-slider-thumb { transform:scale(1.25); }
 </div>
 
 <!-- PANELS -->
-<div id="panelA" class="tpanel active"></div>
-<div id="panelB" class="tpanel"></div>
+<div class="desktop-grid" id="desktopGrid">
+  <div>
+    <div class="tunnel-header" style="display:none;" id="desktopLabelA">
+      ⚡ Túnel A — <span id="desktopModeA" style="font-size:14px;color:var(--muted);">RED</span>
+    </div>
+    <div id="panelA" class="tpanel active"></div>
+  </div>
+  <div>
+    <div class="tunnel-header" style="display:none;" id="desktopLabelB">
+      ⚡ Túnel B — <span id="desktopModeB" style="font-size:14px;color:var(--muted);">RED</span>
+    </div>
+    <div id="panelB" class="tpanel"></div>
+  </div>
+</div>
 
 <div class="toast" id="toast"></div>
 
@@ -917,6 +969,31 @@ setTimeout(()=>{ if(ips.A||ips.B) pingAll(); }, 1000);
   document.getElementById('ipA').value=ips.A;
   document.getElementById('ipB').value=ips.B;
 });
+
+// ── Responsive ──
+function handleResize() {
+  const isWide = window.innerWidth >= 768;
+  // Show/hide desktop labels
+  ['A','B'].forEach(t => {
+    const lbl = document.getElementById('desktopLabel'+t);
+    if(lbl) lbl.style.display = isWide ? 'block' : 'none';
+  });
+  // On wide screens both panels visible
+  if(isWide) {
+    document.getElementById('panelA').classList.add('active');
+    document.getElementById('panelB').classList.add('active');
+  }
+}
+window.addEventListener('resize', handleResize);
+handleResize();
+
+// Update desktop mode labels when conn mode changes
+const _origSetConnMode = setConnMode;
+function setConnMode(t, mode) {
+  _origSetConnMode(t, mode);
+  const dml = document.getElementById('desktopMode'+t);
+  if(dml) dml.textContent = mode==='ap' ? 'AP' : 'RED';
+}
 
 // ── Splash ──
 window.addEventListener('load', () => {
