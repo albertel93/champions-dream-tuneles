@@ -31,6 +31,25 @@ html { background: #07090f; }
   --font: 'DM Mono', monospace;
   --display: 'Bebas Neue', sans-serif;
 }
+
+body.light {
+  --bg: #f4f4f0;
+  --surface: #ffffff;
+  --surface2: #ebebeb;
+  --border: #dcdcdc;
+  --border2: #c8c8c8;
+  --text: #111111;
+  --muted: #888888;
+  --accent: #c4a000;
+  --accent2: #1a6fff;
+  --accent-dim: rgba(196,160,0,0.10);
+  --red: #d42030;
+  --green: #18a050;
+}
+body.light .hdr { border-bottom-color: var(--border); }
+body.light input[type=range] { background: var(--border2); }
+body.light #splash { background: #f4f4f0; }
+body.light .splash-title { color: #111; }
 body { background:var(--bg); color:var(--text); font-family:var(--font); min-height:100vh; padding-bottom:60px; }
 
 /* ── Responsive layout ── */
@@ -336,6 +355,14 @@ input[type=range]:active::-webkit-slider-thumb { transform:scale(1.25); }
   </div>
 
   <button class="save-btn" onclick="saveIPs()">Guardar</button>
+
+  <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);">
+    <div style="font-size:9px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:8px;">Apariencia</div>
+    <div style="display:flex;gap:6px;">
+      <button class="mode-btn active" id="themeDark" onclick="setTheme('dark')">🌙 Oscuro</button>
+      <button class="mode-btn" id="themeLight" onclick="setTheme('light')">☀️ Claro</button>
+    </div>
+  </div>
   <div id="pingStatus" style="margin-top:12px;font-size:11px;color:var(--muted);min-height:16px;line-height:1.6;"></div>
 </div>
 
@@ -969,6 +996,20 @@ setTimeout(()=>{ if(ips.A||ips.B) pingAll(); }, 1000);
   document.getElementById('ipA').value=ips.A;
   document.getElementById('ipB').value=ips.B;
 });
+
+// ── Theme ──
+function setTheme(t) {
+  document.body.classList.toggle('light', t==='light');
+  document.getElementById('themeDark').classList.toggle('active', t==='dark');
+  document.getElementById('themeLight').classList.toggle('active', t==='light');
+  localStorage.setItem('cd_theme', t);
+}
+
+// Load saved theme
+try {
+  const savedTheme = localStorage.getItem('cd_theme') || 'dark';
+  if(savedTheme === 'light') setTheme('light');
+} catch(e){}
 
 // ── Responsive ──
 function handleResize() {
