@@ -33,23 +33,74 @@ html { background: #07090f; }
 }
 
 body.light {
-  --bg: #f4f4f0;
+  --bg: #f0f2f5;
   --surface: #ffffff;
-  --surface2: #ebebeb;
-  --border: #dcdcdc;
-  --border2: #c8c8c8;
-  --text: #111111;
-  --muted: #888888;
-  --accent: #c4a000;
+  --surface2: #e8eaed;
+  --border: #d0d4da;
+  --border2: #b8bcc4;
+  --text: #111318;
+  --muted: #6b7280;
+  --accent: #b8960a;
   --accent2: #1a6fff;
-  --accent-dim: rgba(196,160,0,0.10);
+  --accent-dim: rgba(184,150,10,0.10);
   --red: #d42030;
   --green: #18a050;
 }
-body.light .hdr { border-bottom-color: var(--border); }
+body.light { color: var(--text); }
+body.light .hdr { background: #ffffff; border-bottom: 1px solid var(--border); box-shadow: 0 1px 8px rgba(0,0,0,0.08); }
+body.light .cfg { background: #f8f9fa; border-bottom: 1px solid var(--border); }
+body.light .gbar { background: var(--bg); }
+body.light .ttab { color: var(--muted); }
+body.light .ttab.active { color: var(--accent); border-bottom-color: var(--accent); }
+body.light .tpanel { background: var(--bg); }
+body.light .tunnel-header { color: var(--accent); border-bottom-color: var(--border); }
 body.light input[type=range] { background: var(--border2); }
-body.light #splash { background: #f4f4f0; }
-body.light .splash-title { color: #111; }
+body.light input[type=range]::-webkit-slider-thumb { background: var(--accent); }
+body.light .toggle { background: var(--border2); }
+body.light .toggle.on { background: var(--green); }
+body.light .sdot { background: var(--border2); }
+body.light .sdot.on { background: var(--green); box-shadow: 0 0 8px var(--green); }
+body.light .tbtn { background: var(--surface); border-color: var(--border); }
+body.light .tbtn:hover { border-color: var(--border2); background: var(--surface2); }
+body.light .tbtn.sel { border-color: var(--accent); background: var(--accent-dim); }
+body.light .tname { color: var(--text); }
+body.light .fxbtn { background: var(--surface); border-color: var(--border); }
+body.light .fxbtn:hover { border-color: var(--border2); background: var(--surface2); }
+body.light .fxbtn.active { border-color: var(--accent); background: var(--accent-dim); }
+body.light .fxname { color: var(--text); }
+body.light .fxdesc { color: var(--muted); }
+body.light .evbtn { background: var(--surface); border-color: var(--border); }
+body.light .evbtn.gol:hover { background: rgba(184,150,10,0.10); }
+body.light .evbtn.salida:hover { background: rgba(26,111,255,0.08); }
+body.light .evbtn.victoria:hover { background: rgba(24,160,80,0.10); }
+body.light .evbtn.inicio:hover { background: rgba(212,32,48,0.08); }
+body.light .evname { color: var(--text); }
+body.light .evdesc { color: var(--muted); }
+body.light .seg-btn { background: var(--surface2); border-color: var(--border); color: var(--muted); }
+body.light .seg-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+body.light .mtab { background: var(--surface2); border-color: var(--border); color: var(--muted); }
+body.light .mtab.active { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+body.light .gbtn { background: var(--surface); border-color: var(--border); color: var(--text); }
+body.light .gbtn:hover { border-color: var(--accent); color: var(--accent); }
+body.light .gbtn.active { background: var(--accent); color: #000; border-color: var(--accent); }
+body.light .mode-btn { background: var(--surface2); border-color: var(--border); color: var(--muted); }
+body.light .mode-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+body.light .ip-row input { background: var(--surface); border-color: var(--border); color: var(--text); }
+body.light .ip-row label { color: var(--muted); }
+body.light .srch { background: var(--surface); border-color: var(--border); color: var(--text); }
+body.light .seldisplay { background: var(--surface2); border-color: var(--border); }
+body.light .selname { color: var(--text); }
+body.light .toast { background: var(--surface); border-color: var(--border); color: var(--muted); box-shadow: 0 2px 12px rgba(0,0,0,0.12); }
+body.light .sw { border-color: transparent; }
+body.light .sw.active { border-color: var(--text); }
+body.light .cfg-btn { border-color: var(--border2); color: var(--muted); }
+body.light .cfg-btn:hover { border-color: var(--accent); color: var(--accent); }
+body.light #splash { background: #f0f2f5; }
+body.light .splash-title { color: #111318; }
+body.light .splash-sub { color: var(--muted); }
+body.light .splash-bar { background: var(--border2); }
+body.light .div { background: var(--border); }
+body.light .hdr-title { color: #a07800 !important; }
 body { background:var(--bg); color:var(--text); font-family:var(--font); min-height:100vh; padding-bottom:60px; }
 
 /* ── Responsive layout ── */
@@ -94,6 +145,11 @@ body { background:var(--bg); color:var(--text); font-family:var(--font); min-hei
 
 /* Header */
 .hdr { display:flex; align-items:center; gap:10px; padding:14px 16px; border-bottom:1px solid var(--border); position:sticky; top:0; background:var(--bg); z-index:50; }
+
+@media (min-width:768px) {
+  .hdr { padding:14px 32px; }
+  .hdr-controls { margin-left:auto; display:flex; align-items:center; gap:8px; }
+}
 .hdr img { height:32px; width:auto; }
 .hdr-title { font-family:var(--display); font-size:18px; letter-spacing:2px; flex:1; color:var(--accent); }
 .cfg-btn { background:none; border:1px solid var(--border2); color:var(--muted); font-family:var(--font); font-size:10px; padding:5px 10px; border-radius:6px; cursor:pointer; letter-spacing:1px; text-transform:uppercase; transition:all .15s; }
@@ -319,7 +375,7 @@ input[type=range]:active::-webkit-slider-thumb { transform:scale(1.25); }
 <header class="hdr">
   <div style="height:38px;display:flex;align-items:center;"><svg style="height:38px;width:auto;" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="Capa_3" data-name="Capa 3" viewBox="0 0 128.71 237.31"><defs><style>      .cls-1 {        fill: url(#Degradado_sin_nombre);      }    </style><linearGradient id="Degradado_sin_nombre" data-name="Degradado sin nombre" x1="64.36" y1="228.3" x2="64.36" y2="17.41" gradientTransform="translate(0 240) scale(1 -1)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#facc00"></stop><stop offset=".5" stop-color="#ff0"></stop><stop offset="1" stop-color="#facc00"></stop></linearGradient></defs><path d="M112.23,202.28c3.5,3.78,3.58,9.63.16,13.47-3.32,3.73-7.06,7.06-11.1,9.9-10.85,7.63-23.62,11.66-36.93,11.66s-26.13-4.05-36.98-11.7c-4.06-2.84-7.8-6.18-11.09-9.89-3.38-3.82-3.34-9.56.08-13.34.54-.6,3.29-3.72,6.52-8.98,7.22-11.78,14.77-30.67,9.73-53.73-.78-3.61-1.88-7.29-3.28-10.95-2.16-5.71-5.11-11.49-8.79-17.22C7.47,99.34,0,82.24,0,64.36,0,34.37,20.37,8.61,49.53,1.73c.76-.18,1.53-.27,2.3-.27.5,0,1,.04,1.49.11,1.09-.59,2.31-.99,3.61-1.14,2.44-.29,4.94-.43,7.44-.43s4.97.14,7.4.43c32.47,3.7,56.96,31.19,56.94,63.94,0,17.91-7.5,35.04-20.63,47.22-3.62,5.65-6.56,11.41-8.74,17.12-1.39,3.66-2.49,7.33-3.27,10.92-5.05,23.1,2.51,42,9.74,53.79,3.45,5.62,6.39,8.82,6.42,8.86Z"></path><path class="cls-1" d="M86.3,137.51c.87-4.01,2.09-8.13,3.7-12.36,2.47-6.48,5.87-13.2,10.4-20.09h0c11.23-9.97,18.31-24.51,18.31-40.7.02-27.91-21.02-50.91-48.1-54-2.05-.24-4.13-.36-6.24-.36s-4.22.12-6.28.36v43.14c-3.74,2.16-6.25,6.2-6.25,10.83s2.51,8.67,6.25,10.83v43.19c2.06.25,4.15.36,6.28.36s4.19-.12,6.24-.36c3.23-.36,6.38-1.02,9.41-1.93-.59,1.38-1.15,2.75-1.67,4.11-1.56,4.09-2.79,8.09-3.74,12-4.86,20-2.36,37.42,1.69,50.17,3.26,10.29,7.82,18.69,11.71,24.68-6.73,4.64-14.88,7.36-23.65,7.36s-16.94-2.73-23.67-7.38c3.89-6,8.45-14.4,11.7-24.67,4.03-12.75,6.57-30.18,1.71-50.17-.94-3.91-2.18-7.91-3.74-12-.52-1.37-1.07-2.74-1.67-4.12,1.03.31,2.07.59,3.13.84v-13c-16.99-5.33-29.31-21.19-29.31-39.93s12.32-34.57,29.32-39.9v-12.95c-23.98,5.66-41.83,27.2-41.83,52.9,0,16.16,7.05,30.66,18.23,40.61,4.56,6.93,7.99,13.67,10.46,20.19,1.61,4.23,2.83,8.35,3.7,12.37,5.91,27.04-3.52,48.93-10.98,61.1-3.95,6.44-7.35,10.15-7.63,10.46,2.77,3.13,5.92,5.94,9.36,8.35,8.82,6.22,19.6,9.87,31.22,9.87s22.36-3.64,31.18-9.84c3.44-2.42,6.59-5.24,9.38-8.37,0,0-3.52-3.74-7.63-10.45-7.46-12.16-16.91-34.08-10.99-61.14h0ZM70.61,105.72v-30.53c3.75-2.16,6.28-6.21,6.28-10.85s-2.53-8.69-6.28-10.85v-30.53c20.14,3.02,35.59,20.39,35.59,41.38s-15.45,38.36-35.59,41.38Z"></path></svg></div>
   <div style="font-family:var(--display);font-size:22px;letter-spacing:3px;color:#f0e8d0;line-height:1;">CHAMPIONS DREAM</div>
-  <div style="display:flex;gap:6px;align-items:center;">
+  <div class="hdr-controls" style="margin-left:auto;display:flex;align-items:center;gap:8px;">
     <div id="pingA" title="Túnel A" style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--muted);letter-spacing:.5px;">
       <div id="pingDotA" style="width:8px;height:8px;border-radius:50%;background:var(--muted2);transition:background .3s;flex-shrink:0;"></div>A
     </div>
@@ -327,8 +383,8 @@ input[type=range]:active::-webkit-slider-thumb { transform:scale(1.25); }
       <div id="pingDotB" style="width:8px;height:8px;border-radius:50%;background:var(--muted2);transition:background .3s;flex-shrink:0;"></div>B
     </div>
     <button id="pingBtn" onclick="pingAll()" style="background:none;border:1px solid var(--border2);color:var(--muted);font-family:var(--font);font-size:10px;padding:4px 9px;border-radius:6px;cursor:pointer;letter-spacing:.8px;text-transform:uppercase;transition:all .15s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border2)';this.style.color='var(--muted)'">Ping</button>
+    <button class="cfg-btn" onclick="toggleCfg()">⚙ Config</button>
   </div>
-  <button class="cfg-btn" onclick="toggleCfg()">⚙ Config</button>
 </header>
 
 <div class="cfg" id="cfgPanel">
