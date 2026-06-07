@@ -11,6 +11,10 @@
   } catch(e){}
 })();
 </script>
+<script>
+// Detect mode from URL parameter
+var APP_MODE = 'dual';
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Champions Dream — Túneles LED</title>
 
@@ -259,6 +263,20 @@ input[type=range]:active::-webkit-slider-thumb { transform:scale(1.25); }
 .toast.err { color:var(--red); border-color:rgba(232,48,64,.3); }
 .toast.ev { color:var(--accent); border-color:rgba(232,200,64,.3); }
 
+/* ── Individual mode ── */
+.individual-badge {
+  display: none;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--accent);
+  background: var(--accent-dim);
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  padding: 3px 8px;
+  margin-left: 8px;
+}
+
 /* ── Splash ── */
 #splash {
   position: fixed;
@@ -279,7 +297,7 @@ input[type=range]:active::-webkit-slider-thumb { transform:scale(1.25); }
 .splash-logo {
   opacity: 0;
   transform: scale(.7);
-  animation: splashIn .7s cubic-bezier(.22,1,.36,1) .2s forwards;
+  animation: splashIn .9s cubic-bezier(.22,1,.36,1) .3s forwards;
 }
 .splash-title {
   font-family: 'Bebas Neue', sans-serif;
@@ -316,7 +334,7 @@ input[type=range]:active::-webkit-slider-thumb { transform:scale(1.25); }
   width: 0%;
   background: linear-gradient(90deg, #facc00, #ffff00, #facc00);
   border-radius: 2px;
-  animation: splashLoad 1s ease 1.2s forwards;
+  animation: splashLoad 1.5s ease 1s forwards;
 }
 @keyframes splashIn {
   to { opacity:1; transform:scale(1); }
@@ -537,19 +555,12 @@ const state = { A:mkState(), B:mkState() };
 let synced = false;
 let ips = { A:'', B:'' };
 
-try {
-  const s = JSON.parse(localStorage.getItem('cd_ips')||'{}');
-  if(s.A) ips.A=s.A; if(s.B) ips.B=s.B;
-  if(s.modeA) connMode.A=s.modeA;
-  if(s.modeB) connMode.B=s.modeB;
-} catch(e){}
-
-// Restore IP inputs and mode buttons on page load
+// IPs se fijan despues de declarar connMode
 function restoreConfig() {
-  ['A','B'].forEach(t => {
-    const input = document.getElementById('ip'+t);
-    if(input && ips[t]) input.value = ips[t];
-  });
+  const iA = document.getElementById('ipA');
+  const iB = document.getElementById('ipB');
+  if(iA) { iA.value = '192.168.4.10'; iA.readOnly = true; }
+  if(iB) { iB.value = '192.168.4.11'; iB.readOnly = true; }
 }
 
 // ── Init panels ──
@@ -929,6 +940,9 @@ function showToast(msg,type=''){
 
 // ── Connection mode ──
 const connMode = { A:'net', B:'net' };
+// Router: IPs siempre fijas
+ips.A = '192.168.4.10';
+ips.B = '192.168.4.11';
 
 function setConnMode(t, mode) {
   connMode[t] = mode;
@@ -1022,6 +1036,62 @@ async function pingAll() {
 // Auto-ping on load after 1s if IPs are set
 setTimeout(()=>{ if(ips.A||ips.B) pingAll(); }, 1000);
 
+// ── Mode setup ──
+function setupMode() {
+  if(APP_MODE === 'dual') {
+    // Modo dual - rellenar IPs si no están guardadas
+    if(!ips.A) { ips.A = '192.168.4.20'; }
+    if(!ips.B) { ips.B = '192.168.4.21'; }
+    const iA = document.getElementById('ipA');
+    const iB = document.getElementById('ipB');
+    if(iA && !iA.value) iA.value = ips.A;
+    if(iB && !iB.value) iB.value = ips.B;
+    return;
+  }
+
+  const tunnel = APP_MODE; // 'A' o 'B'
+  const other  = tunnel === 'A' ? 'B' : 'A';
+  const ip     = tunnel === 'A' ? '192.168.4.20' : '192.168.4.21';
+
+  // Fijar IP y guardar
+  ips[tunnel] = ip;
+  ips[other]  = '';
+  localStorage.setItem('cd_ips', JSON.stringify({...ips, modeA:'ap', modeB:'ap'}));
+
+  // Rellenar input IP
+  const inputEl = document.getElementById('ip'+tunnel);
+  if(inputEl) { inputEl.value = ip; inputEl.readOnly = true; }
+
+  // Ocultar fila de IP del otro túnel en Config
+  const ipRowOther = document.getElementById('ipRow'+other);
+  if(ipRowOther) ipRowOther.style.display = 'none';
+  const modeRowOther = document.getElementById('modeRow'+other);
+  if(modeRowOther) modeRowOther.style.display = 'none';
+
+  // Ocultar pestañas y mostrar solo el panel correcto
+  const tabs = document.querySelector('.ttabs');
+  if(tabs) tabs.style.display = 'none';
+  document.getElementById('panel'+tunnel).classList.add('active');
+  document.getElementById('panel'+other).classList.remove('active');
+
+  // Ocultar botón sincronizar
+  const syncBtn = document.getElementById('syncBtn');
+  if(syncBtn) syncBtn.style.display = 'none';
+
+  // Actualizar título
+  const title = document.querySelector('.hdr-title');
+  if(title) {
+    title.innerHTML = 'CHAMPIONS DREAM <span style="font-size:14px;color:var(--muted);letter-spacing:1px;">— TÚNEL '+tunnel+'</span>';
+  }
+
+  // Ocultar ping del otro túnel
+  const pingOther = document.getElementById('ping'+other);
+  if(pingOther) pingOther.style.display = 'none';
+
+  // Auto-ping
+  setTimeout(() => pingTunnel(tunnel), 1500);
+}
+
 // ── Render all ──
 // Apply saved conn modes to UI
 ['A','B'].forEach(t=>{
@@ -1083,15 +1153,31 @@ handleResize();
 
 
 // ── Splash ──
-window.addEventListener('load', () => {
-  setTimeout(() => {
-    const splash = document.getElementById('splash');
-    splash.classList.add('hide');
-    const app = document.getElementById('appContent');
-    if(app) app.classList.add('visible');
-    setTimeout(() => splash.remove(), 700);
-  }, 2400);
-});
+// Dismiss splash after content ready
+function dismissSplash() {
+  const splash = document.getElementById('splash');
+  if(!splash) return;
+  splash.classList.add('hide');
+  const app = document.getElementById('appContent');
+  if(app) app.classList.add('visible');
+  setTimeout(() => { if(splash.parentNode) splash.remove(); }, 700);
+}
+// Use DOMContentLoaded + short timer so it works even on slow devices
+if(document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => setTimeout(dismissSplash, 2800));
+} else {
+  setTimeout(dismissSplash, 2800);
+}
+window.addEventListener('load', () => setTimeout(dismissSplash, 2800));
+</script>
+<script>
+// Service Worker solo en GitHub Pages
+if('serviceWorker' in navigator && location.protocol === 'https:') {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/champions-dream-tuneles/sw.js')
+      .catch(err => console.log('SW error:', err));
+  });
+}
 </script>
 </body>
 </html>
